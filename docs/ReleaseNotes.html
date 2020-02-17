@@ -12,6 +12,84 @@ body {
 
 <h2>Hex Fiend Release Notes</h2>
 
+<h3>v2.12</h3>
+<ul>
+<li>macOS 10.9 or later is now required.</li>
+<li>Added basic extended attributes support. The open file dialog will now list the extended attributes for the selected file. This allows opening classic metadata such as resource forks ("com.apple.ResourceFork") and Finder Info ("com.apple.FinderInfo"), and other data (for example "com.apple.quarantine"). Currently extended attributes are read-only and cannot be modified.</li>
+<li>Data Inspector can now view half-precision (2-byte) floats</li>
+<li>Prevent the document from being modified when editing ends with the data inspector</li>
+<li>Binary template improvements:
+  <ul>
+    <li>Add experimental <code>uint8_bits</code>, <code>uint16_bits</code>, <code>uint32_bits</code>, and <code>uint64_bits</code> commands</li>
+    <li>Add <code>unixtime32</code> and <code>unixtime64</code> for reading unix times</li>
+    <li>Add <code>cstr</code> command for reading NUL-terminated strings</li>
+    <li>Add file caching to improve performance</li>
+    <li>Fix UUID reading for little endian (@tellowkrinkle)</li>
+    <li>Add TIFF template (@denisname)</li>
+    <li>Add PSD template (@Reeywhaar)</li>
+    <li>Add ID3v2 template (@wader)</li>
+    <li>Updated FLAC template (@wader)</li>
+  </ul>
+</li>
+</ul>
+
+<h3>v2.11</h3>
+<ul>
+<li>Hex Fiend is notarized for added security on 10.14+</li>
+<li>Binary template improvements:
+  <ul>
+    <li>Add section selection</li>
+    <li>Add <code>entry</code> command for arbitrary key/value fields</li>
+    <li>Add <code>eof</code> as a special length parameter to go to the end of the file</li>
+    <li>Add optional <code>-hex</code> argument for unsigned integers to display as hexadecimal</li>
+    <li>Add <code>str</code> command that takes an encoding identifier</li>
+    <li>Add <code>sectionvalue</code> command that sets the value of the current section</li>
+    <li>Sections now auto-expand</li>
+    <li>Add preference for controlling behavior on single and double click of template entries</li>
+    <li>Set working directory to templates folder so "source" command can use relative paths</li>
+    <li>Performing a copy with a selected entry copies its value to the clipboard</li>
+    <li>Fix incorrect anchor usage in some commands</li>
+    <li>Fix incorrect error handling with <code>zlib_uncompress</code></li>
+	<li>Fix window width adjustment when showing/hiding templates</li>
+    <li>Prefix hexadecimal values with 0x to match Data Inspector</li>
+    <li>Improve error messages for read failures</li>
+    <li>Improve documentation</li>
+  </ul>
+<li>Add anchored scrolling. When scrolling horizontally, the document will be anchored by the selection offset (if visible) or first visible byte</li>
+<li>Add column view (off by default)</li>
+<li>Add custom byte grouping</li>
+<li>Fix data inspector text alignment (thanks rpendleton)</li>
+<li>Fix plain/ascii text alignment with line numbers</li>
+<li>Fix crash when Color Bytes is enabled with a multi-byte text encoding</li>
+<li>Fix incorrect parsing of large ULEB128/SLEB128 values</li>
+<li>Move fonts in Font menu to bottom to improve handling for a large number of fonts</li>
+</ul>
+
+<h3>v2.10</h3>
+<ul>
+<li>Add dark mode for 10.14 Mojave</li>
+<li>Initial tabbed windows support (thanks saagarjha)</li>
+<li>Binary template improvements:
+<ul>
+  <li>Template label argument is now optional. When the label argument is not passed, no entry in the UI will be created.</li>
+  <li>The selected template is now remembered</li>
+  <li>"Refresh" also reloads the selected template</li>
+  <li>Add "Copy Value" to binary template item</li>
+  <li>Increased script timeout to 10 seconds</li>
+  <li>Add "Select Bytes" context menu</li>
+  <li>Fix template variables persisting between runs</li>
+  <li>Improve "requires" error message</li>
+  <li>Add "bytes" command</li>
+  <li>Add "zlib_uncompress" command</li>
+</ul>
+<li>hexf improvements:
+<ul>
+  <li>hexf can open documents from stdin (for example "echo hello | hexf")</li>
+  <li>hexf brings Hex Fiend to front</li>
+</ul>
+<li>Experimental <a href="https://github.com/ridiculousfish/HexFiend/issues/95#issuecomment-397858715">custom string encoding</a> support</li>
+</ul>
+
 <h3>v2.9</h3>
 <ul>
 <li>Binary Templates are here! Note this is an early beta, and fields are currently read-only.</li>

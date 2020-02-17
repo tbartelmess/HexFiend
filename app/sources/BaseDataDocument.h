@@ -10,6 +10,7 @@
 
 @class HFByteArray, HFRepresenter, HFHexTextRepresenter, HFLineCountingRepresenter, HFLayoutRepresenter, HFDocumentOperationView, DataInspectorRepresenter;
 @class HFBinaryTemplateRepresenter;
+@class HFColumnRepresenter;
 
 extern NSString * const BaseDataDocumentDidChangeStringEncodingNotification;
 
@@ -17,6 +18,7 @@ extern NSString * const BaseDataDocumentDidChangeStringEncodingNotification;
     IBOutlet NSView *containerView;
     HFController *controller;
     
+    HFColumnRepresenter *columnRepresenter;
     HFLineCountingRepresenter *lineCountingRepresenter;
     HFHexTextRepresenter *hexRepresenter;
     HFRepresenter *asciiRepresenter;
@@ -90,6 +92,7 @@ extern NSString * const BaseDataDocumentDidChangeStringEncodingNotification;
 - (IBAction)setInsertMode:sender;
 - (IBAction)setReadOnlyMode:sender;
 - (IBAction)modifyByteGrouping:sender;
+- (IBAction)customByteGrouping:(id)sender;
 - (IBAction)setLineNumberFormat:(id)sender;
 
 - (IBAction)setBookmark:sender;
@@ -120,5 +123,7 @@ extern NSString * const BaseDataDocumentDidChangeStringEncodingNotification;
 
 @property (nonatomic) BOOL shouldLiveReload;
 - (IBAction)setLiveReloadFromMenuItem:sender;
+
+- (void)insertData:(NSData *)data;
 
 @end

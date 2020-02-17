@@ -13,15 +13,10 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.1.1</string>
+	<string>HEXFIEND_VERSION</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>200</string>
-	<key>SMPrivilegedExecutables</key>
-	<dict>
-		<key>com.ridiculousfish.HexFiend.PrivilegedHelper</key>
-		<string>certificate leaf[subject.CN] = "Hex Fiend"</string>
-	</dict>
 </dict>
 </plist>

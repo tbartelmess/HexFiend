@@ -12,12 +12,14 @@
 @interface AppDelegate : NSObject {
     IBOutlet NSMenuItem *extendForwardsItem, *extendBackwardsItem;
     IBOutlet NSMenuItem *fontMenuItem;
+    IBOutlet NSMenuItem *fontListPlaceholderMenuItem;
     IBOutlet NSMenuItem *processListMenuItem;
     IBOutlet NSMenu *bookmarksMenu;
     IBOutlet NSMenuItem *noBookmarksMenuItem;
     NSArray *bookmarksMenuItems;
     IBOutlet NSMenu *stringEncodingMenu;
     IBOutlet ChooseStringEncodingWindowController *chooseStringEncoding;
+    IBOutlet NSMenuItem *byteGroupingMenuItem;
 }
 
 - (IBAction)diffFrontDocuments:(id)sender;
@@ -29,5 +31,7 @@
 - (IBAction)openPreferences:(id)sender;
 
 @property (readonly) HFStringEncoding *defaultStringEncoding;
+
+- (void)buildByteGroupingMenu;
 
 @end

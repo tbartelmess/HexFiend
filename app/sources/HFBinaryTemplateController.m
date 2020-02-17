@@ -67,6 +67,9 @@
 }
 
 - (void)awakeFromNib {
+    self.outlineView.doubleAction = @selector(outlineViewDoubleAction:);
+    self.outlineView.target = self;
+    
     [self loadTemplates:self];
 
     [[NSUserDefaults standardUserDefaults] addObserver:self
@@ -195,7 +198,19 @@
     NSString *errorMessage = nil;
     HFTclTemplateController *templateController = [[HFTclTemplateController alloc] init];
     templateController.anchor = self.anchorPosition;
+    
+    // Change directory to the templates folder so "source" command can use relative paths
+    NSFileManager *fm = NSFileManager.defaultManager;
+    NSString *currentDir = fm.currentDirectoryPath;
+    if (![fm changeCurrentDirectoryPath:self.templatesFolder]) {
+        NSLog(@"Failed to change directory to %@", self.templatesFolder);
+    }
+    
     HFTemplateNode *node = [templateController evaluateScript:self.selectedFile.path forController:controller error:&errorMessage];
+    
+    // Restore current directory
+    (void)[fm changeCurrentDirectoryPath:currentDir];
+    
     [self setRootNode:node error:errorMessage];
     [self updateSelectionColorRange];
 }
@@ -227,6 +242,17 @@
     return nil;
 }
 
+- (void)collapseValuedGroups {
+    NSOutlineView *outlineView = self.outlineView;
+    NSInteger numberOfRows = outlineView.numberOfRows;
+    for (NSInteger i = numberOfRows - 1; i >=0; --i) {
+        HFTemplateNode *node = [outlineView itemAtRow:i];
+        if (node.isGroup && node.value) {
+            [outlineView collapseItem:node];
+        }
+    }
+}
+
 - (void)setRootNode:(HFTemplateNode *)node error:(NSString *)error {
     if (error != nil) {
         self.node = nil;
@@ -237,6 +263,10 @@
         self.errorTextField.hidden = YES;
     }
     [self.outlineView reloadData];
+    [self.outlineView expandItem:nil expandChildren:YES];
+    if ([NSUserDefaults.standardUserDefaults boolForKey:@"BinaryTemplatesAutoCollapseValuedGroups"]) {
+        [self collapseValuedGroups];
+    }
 }
 
 - (NSColor *)selectionColor {
@@ -280,12 +310,18 @@
     [self updateSelectionColorRange];
     
     if (self.outlineView.numberOfSelectedRows == 1) {
-        NSUserDefaults *uds = [NSUserDefaults standardUserDefaults];
-        if ([uds boolForKey:@"BinaryTemplatesOnSelectionJump"]) {
-            [self jumpToField:nil];
-        }
-        if ([uds boolForKey:@"BinaryTemplatesOnSelectionSelect"]) {
-            [self selectBytes:nil];
+        NSInteger action = [[NSUserDefaults standardUserDefaults] integerForKey:@"BinaryTemplatesSingleClickAction"];
+        switch (action) {
+            case 0: // do nothing
+                break;
+            case 1: // scroll to offset
+                [self jumpToField:nil];
+                break;
+            case 2: // select bytes
+                [self selectBytes:nil];
+                break;
+            default:
+                NSLog(@"Unknown single click action %ld", action);
         }
     }
 }
@@ -299,7 +335,7 @@
     id obj = row != -1 ? [sender itemAtRow:row] : nil;
     NSMenuItem *item;
 
-    item = [menu addItemWithTitle:NSLocalizedString(@"Jump to Field", nil) action:@selector(jumpToField:) keyEquivalent:@""];
+    item = [menu addItemWithTitle:NSLocalizedString(@"Scroll to Offset", nil) action:@selector(jumpToField:) keyEquivalent:@""];
     item.target = self;
     item.enabled = obj != nil;
     
@@ -312,6 +348,26 @@
     item.enabled = obj != nil;
 
     return menu;
+}
+
+- (void)outlineViewDoubleAction:(id)sender {
+    HFASSERT(sender == self.outlineView);
+    NSInteger row = self.outlineView.clickedRow;
+    if (row != -1) {
+        NSInteger action = [[NSUserDefaults standardUserDefaults] integerForKey:@"BinaryTemplatesDoubleClickAction"];
+        switch (action) {
+            case 0: // do nothing
+                break;
+            case 1: // scroll to offset
+                [self jumpToField:sender];
+                break;
+            case 2: // select bytes
+                [self selectBytes:sender];
+                break;
+            default:
+                NSLog(@"Unknown double click action %ld", action);
+        }
+    }
 }
 
 - (void)jumpToField:(id __unused)sender {
@@ -336,6 +392,13 @@
 - (void)selectBytes:(id __unused)sender {
     HFTemplateNode *node = [self.outlineView itemAtRow:[self.outlineView selectedRow]];
     [self.controller setSelectedContentsRanges:@[[HFRangeWrapper withRange:node.range]]];
+}
+
+- (void)copy:(id)sender {
+    // NSResponder chain from Edit > Copy
+    if (self.outlineView.numberOfSelectedRows > 0) {
+        [self copyValue:sender];
+    }
 }
 
 @end

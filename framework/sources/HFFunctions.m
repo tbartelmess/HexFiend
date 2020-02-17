@@ -738,7 +738,7 @@ NSData *HFDataFromHexString(NSString *string, BOOL* isMissingLastNybble) {
     return result;    
 }
 
-NSString *HFHexStringFromData(NSData *data) {
+NSString *HFHexStringFromData(NSData *data, BOOL includePrefix) {
     REQUIRE_NOT_NULL(data);
     NSUInteger dataLength = [data length];
     NSUInteger stringLength = HFProductInt(dataLength, 2);
@@ -750,7 +750,11 @@ NSString *HFHexStringFromData(NSData *data) {
         charBuffer[charIndex++] = hex2char(byte >> 4);
         charBuffer[charIndex++] = hex2char(byte & 0xF);
     }
-    return [[NSString alloc] initWithBytesNoCopy:charBuffer length:stringLength encoding:NSASCIIStringEncoding freeWhenDone:YES];
+    NSString *hex = [[NSString alloc] initWithBytesNoCopy:charBuffer length:stringLength encoding:NSASCIIStringEncoding freeWhenDone:YES];
+    if (includePrefix) {
+        return [@"0x" stringByAppendingString:hex];
+    }
+    return hex;
 }
 
 void HFSetFDShouldCache(int fd, BOOL shouldCache) {
@@ -888,13 +892,13 @@ NSString *HFDescribeByteCountWithPrefixAndSuffix(const char *stringPrefix, unsig
     return [[NSString alloc] initWithBytesNoCopy:resultPointer length:numChars encoding:NSASCIIStringEncoding freeWhenDone:YES];
 }
 
+#if !TARGET_OS_IPHONE
 static CGFloat interpolateShadow(CGFloat val) {
     //A value of 1 means we are at the rightmost, and should return our max value.  By adjusting the scale, we control how quickly the shadow drops off.
     CGFloat scale = 1.4;
     return (CGFloat)(expm1(val * scale) / expm1(scale));
 }
 
-#if !TARGET_OS_IPHONE
 void HFDrawShadow(CGContextRef ctx, NSRect rect, CGFloat shadowSize, NSRectEdge rectEdge, BOOL drawActive, NSRect clip) {
     NSRect remainingRect, unused;
     NSDivideRect(rect, &remainingRect, &unused, shadowSize, rectEdge);
@@ -996,4 +1000,20 @@ HFColor* HFColorWithRGB(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha)
 #else
     return [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
 #endif
+}
+
+
+NSUInteger HFLineHeightForFont(HFFont *font) {
+#if TARGET_OS_IPHONE
+    NSUInteger defaultLineHeight = (NSUInteger)ceil(font.lineHeight);
+#else
+    NSLayoutManager *manager = [[NSLayoutManager alloc] init];
+    NSUInteger defaultLineHeight = (NSUInteger)ceil([manager defaultLineHeightForFont:font]);
+#endif
+    // Make sure there's an even number of spacing on top and bottom so
+    // the font centers cleaner.
+    if (((defaultLineHeight - (NSUInteger)ceil(font.ascender + fabs(font.descender))) % 2) != 0) {
+        ++defaultLineHeight;
+    }
+    return defaultLineHeight;
 }

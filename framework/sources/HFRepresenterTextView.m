@@ -17,8 +17,6 @@
 
 static const NSTimeInterval HFCaretBlinkFrequency = 0.56;
 
-static const CGFloat HFTeardropRadius = 12;
-
 @implementation HFRepresenterTextView
 
 - (NSArray *)displayedSelectedContentsRanges {
@@ -451,7 +449,7 @@ enum LineCoverage_t {
                 pulseWindowBaseFrameInScreenCoordinates = [self convertRect:windowFrameInBoundsCoords toView:nil];
                 pulseWindowBaseFrameInScreenCoordinates.origin = [[self window] convertRectToScreen:pulseWindowBaseFrameInScreenCoordinates].origin;
                 
-                pulseWindow = [[NSWindow alloc] initWithContentRect:pulseWindowBaseFrameInScreenCoordinates styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+                pulseWindow = [[NSWindow alloc] initWithContentRect:pulseWindowBaseFrameInScreenCoordinates styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
                 [pulseWindow setReleasedWhenClosed:NO];
                 [pulseWindow setOpaque:NO];
                 HFTextSelectionPulseView *pulseView = [[HFTextSelectionPulseView alloc] initWithFrame:[[pulseWindow contentView] frame]];
@@ -568,11 +566,7 @@ enum LineCoverage_t {
     [self drawRangesIfNecessary:ranges withClip:clipRect color:[self textSelectionColor] context:ctx];
 }
 
-#if TARGET_OS_IPHONE
-- (void)drawRangesIfNecessary:(NSArray *)ranges withClip:(CGRect)clipRect color:(UIColor *)color context:(CGContextRef)ctx
-#else
-- (void)drawRangesIfNecessary:(NSArray *)ranges withClip:(CGRect)clipRect color:(NSColor *)color context:(CGContextRef)ctx
-#endif
+- (void)drawRangesIfNecessary:(NSArray *)ranges withClip:(CGRect)clipRect color:(HFColor *)color context:(CGContextRef)ctx
 {
     NSUInteger bytesPerLine = [self bytesPerLine];
     [color set];
@@ -707,20 +701,11 @@ enum LineCoverage_t {
     return bytesBetweenVerticalGuides;
 }
 
-#if TARGET_OS_IPHONE
-- (void)setFont:(UIFont *)val
-#else
-- (void)setFont:(NSFont *)val
-#endif
+- (void)setFont:(HFFont *)val
 {
     if (val != _font) {
         _font = val;
-        NSLayoutManager *manager = [[NSLayoutManager alloc] init];
-#if TARGET_OS_IPHONE
-        defaultLineHeight = val.lineHeight;
-#else
-        defaultLineHeight = [manager defaultLineHeightForFont:_font];
-#endif
+        defaultLineHeight = HFLineHeightForFont(_font);
 #if TARGET_OS_IPHONE
         [self setNeedsDisplay];
 #else
@@ -734,11 +719,7 @@ enum LineCoverage_t {
 }
 
 /* The base implementation does not support font substitution, so we require that it be the base font. */
-#if TARGET_OS_IPHONE
-- (UIFont *)fontAtSubstitutionIndex:(uint16_t)idx
-#else
-- (NSFont *)fontAtSubstitutionIndex:(uint16_t)idx
-#endif
+- (HFFont *)fontAtSubstitutionIndex:(uint16_t)idx
 {
     HFASSERT(idx == 0);
     USE(idx);
@@ -934,20 +915,11 @@ enum LineCoverage_t {
     lineRect.origin.y -= [self verticalOffset] * [self lineHeight];
     NSUInteger drawableLineIndex = 0;
     NEW_ARRAY(CGRect, lineRects, maxLines);
-#if TARGET_OS_IPHONE
-    NEW_OBJ_ARRAY(UIColor*, lineColors, maxLines);
-#else
-    NEW_OBJ_ARRAY(NSColor*, lineColors, maxLines);
-#endif
+    NEW_OBJ_ARRAY(HFColor*, lineColors, maxLines);
     for (lineIndex = 0; lineIndex < maxLines; lineIndex++) {
         CGRect clippedLineRect = CGRectIntersection(lineRect, clip);
         if (! CGRectIsEmpty(clippedLineRect)) {
-#if TARGET_OS_IPHONE
-            UIColor
-#else
-            NSColor
-#endif
-            *lineColor = [self backgroundColorForLine:lineIndex];
+            HFColor *lineColor = [self backgroundColorForLine:lineIndex];
             if (lineColor) {
                 lineColors[drawableLineIndex] = lineColor;
                 lineRects[drawableLineIndex] = clippedLineRect;
@@ -959,7 +931,7 @@ enum LineCoverage_t {
     
     if (drawableLineIndex > 0) {
 #if !TARGET_OS_IPHONE
-        NSRectFillListWithColorsUsingOperation(lineRects, lineColors, drawableLineIndex, NSCompositeSourceOver);
+        NSRectFillListWithColorsUsingOperation(lineRects, lineColors, drawableLineIndex, NSCompositingOperationSourceOver);
 #endif
     }
     
@@ -1075,11 +1047,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     UNIMPLEMENTED();
 }
 
-#if TARGET_OS_IPHONE
-- (UIColor *)colorForBookmark:(NSUInteger)bookmark withAlpha:(CGFloat)alpha
-#else
-- (NSColor *)colorForBookmark:(NSUInteger)bookmark withAlpha:(CGFloat)alpha
-#endif
+- (HFColor *)colorForBookmark:(NSUInteger)bookmark withAlpha:(CGFloat)alpha
 {
     // OMG this is so clever I'm going to die.  Reverse our bits and use that as a hue lookup into the color wheel.
     NSUInteger v = bookmark - 1; //because bookmarks are indexed from 1
@@ -1100,11 +1068,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 #endif
 }
 
-#if TARGET_OS_IPHONE
-- (UIColor *)colorForBookmark:(NSUInteger)bookmark
-#else
-- (NSColor *)colorForBookmark:(NSUInteger)bookmark
-#endif
+- (HFColor *)colorForBookmark:(NSUInteger)bookmark
 {
     return [self colorForBookmark:bookmark withAlpha:(CGFloat).66];
 }
@@ -1160,7 +1124,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 #if TARGET_OS_IPHONE
     (void)bookmarkExtents; (void)rect;
 #else
-    NSUInteger idx = 0, numBookmarks = [bookmarkExtents count];
+    NSUInteger numBookmarks = [bookmarkExtents count];
     const CGFloat lineThickness = 1.5;
     [NSBezierPath setDefaultLineWidth:lineThickness];
     
@@ -1245,6 +1209,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 
 - (void)drawByteColoringBackground:(NSRange)range inRect:(CGRect)rect {
     if(!byteColoring) return;
+    if (self.bytesPerCharacter != 1) return;
     
     size_t width = (size_t)rect.size.width;
     
@@ -1379,7 +1344,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     p = propertyInfos + 0;
     if (p->count > 0) {
 #if !TARGET_OS_IPHONE
-        NSRectFillListWithColorsUsingOperation(p->rectList, p->propertyValueList, p->count, NSCompositeSourceOver);
+        NSRectFillListWithColorsUsingOperation(p->rectList, p->propertyValueList, p->count, NSCompositingOperationSourceOver);
 #endif
     }
     
@@ -1426,13 +1391,8 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
             /* Check if this run is finished, or if we are using a substitution font */
             if (i == glyphCount || glyphs[i].fontIndex != runFontIndex || runFontIndex > 0) {
                 /* Draw this run */
-#if TARGET_OS_IPHONE
-                UIFont
-#else
-                NSFont
-#endif
-                *fontToUse = [self fontAtSubstitutionIndex:runFontIndex];
 #if !TARGET_OS_IPHONE
+                HFFont *fontToUse = [self fontAtSubstitutionIndex:runFontIndex];
                 [[fontToUse screenFont] set];
 #endif
                 CGContextSetTextPosition(ctx, point.x + runAdvance, point.y);
@@ -1553,7 +1513,9 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     
     /* Start us off with the horizontal inset and move the baseline down by the ascender so our glyphs just graze the top of our view */
     textTransform.tx += [self horizontalContainerInset];
-    textTransform.ty += [fontObject ascender] - lineHeight * [self verticalOffset];
+    // Adjust by descender to center
+    CGFloat yAdjust = lineHeight - ceil(fabs(fontObject.descender));
+    textTransform.ty += yAdjust - lineHeight * [self verticalOffset];
     NSUInteger lineIndex = 0;
     const NSUInteger maxGlyphCount = [self maximumGlyphCountForByteCount:bytesPerLine];
     NEW_ARRAY(struct HFGlyph_t, glyphs, maxGlyphCount);
@@ -2012,9 +1974,9 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     NSPoint autoscrollLocation = mouseDownLocation;
     while (! _hftvflags.receivedMouseUp) {
         @autoreleasepool {
-        NSEvent *ev = [NSApp nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSPeriodicMask untilDate:endDate inMode:NSEventTrackingRunLoopMode dequeue:YES];
+        NSEvent *ev = [NSApp nextEventMatchingMask: NSEventMaskLeftMouseUp | NSEventMaskLeftMouseDragged | NSEventMaskPeriodic untilDate:endDate inMode:NSEventTrackingRunLoopMode dequeue:YES];
         
-        if ([ev type] == NSPeriodic) {
+        if ([ev type] == NSEventTypePeriodic) {
             // autoscroll if drag is out of view bounds
             CGFloat amountToScroll = 0;
             NSRect bounds = [self bounds];
@@ -2031,7 +1993,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
                 [[self representer] continueSelectionWithEvent:ev forCharacterIndex:characterIndex];
             }
         }
-        else if ([ev type] == NSLeftMouseDragged) {
+        else if ([ev type] == NSEventTypeLeftMouseDragged) {
             autoscrollLocation = [self convertPoint:[ev locationInWindow] fromView:nil];
         }
         
