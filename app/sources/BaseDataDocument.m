@@ -465,25 +465,11 @@ static inline Class preferredByteArrayClass(void) {
     [controller addRepresenter:layoutRepresenter];
     
     NSView *layoutView = [layoutRepresenter view];
-    [layoutView setAutoresizingMask:NSViewNotSizable];
-    
+    [layoutView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+
     if (containerView) {
-        NSRect scrollViewFrame = containerView.bounds;
-        containerViewScrollView = [[NSScrollView alloc] initWithFrame:scrollViewFrame];
-        containerViewScrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        containerViewScrollView.drawsBackground = NO;
-        containerViewScrollView.hasVerticalScroller = YES;
-        containerViewScrollView.hasHorizontalScroller = NO;
-        containerViewScrollView.borderType = NSNoBorder;
-        containerViewScrollView.contentView.copiesOnScroll = NO;
-
-        NSRect layoutRect = containerViewScrollView.bounds;
-        layoutRect.size.height = MAX(layoutRect.size.height, controller.totalLineCount * controller.lineHeight);
-        [layoutView setFrame:layoutRect];
-        NSLog(@"HEIGHT: %f", layoutRect.size.height);
-        containerViewScrollView.documentView = layoutView;
-
-        [containerView addSubview:containerViewScrollView];
+        [layoutView setFrame:[containerView bounds]];
+        [containerView addSubview:layoutView];
     }
     [self applyDefaultRepresentersToDisplay];
     
