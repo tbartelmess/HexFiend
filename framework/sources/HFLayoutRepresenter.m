@@ -27,6 +27,9 @@
 @end
 
 @implementation HFLayoutRepresenter
+{
+    NSScrollView *scrollView;
+}
 
 static NSInteger sortByLayoutPosition(id a, id b, void *self) {
     USE(self);
@@ -255,46 +258,68 @@ static NSInteger sortByLayoutPosition(id a, id b, void *self) {
 
 - (void)setupScrollView:(NSArray *)arraysOfLayoutInfos
 {
-    static NSScrollView *scrollView = nil;
+    NSArray *layoutInfoArray = nil;
+    for (NSArray *rowLayoutInfoArray in arraysOfLayoutInfos) {
+        if (rowLayoutInfoArray.count <= 1) {
+            continue;
+        }
+        layoutInfoArray = rowLayoutInfoArray;
+        break;
+    }
+    if (!layoutInfoArray) {
+        NSLog(@"Nothing to do");
+        return;
+    }
+
+    NSMutableArray *views = [NSMutableArray array];
+    for (HFRepresenterLayoutViewInfo *info in layoutInfoArray) {
+        [views addObject:info->view];
+    }
+    if (scrollView && [scrollView.subviews isEqualTo:views]) {
+        // No change
+        NSLog(@"No change");
+        return;
+    }
+
     if (scrollView) {
         [scrollView removeFromSuperview];
     }
-    for (NSArray* layoutInfoArray in arraysOfLayoutInfos) {
-        if (layoutInfoArray.count <= 1) {
-            continue;
-        }
-        NSRect scrollViewFrame = NSZeroRect;
-        for (HFRepresenterLayoutViewInfo *info in layoutInfoArray) {
-            const NSRect infoFrame = info->frame;
-            scrollViewFrame.origin.y = infoFrame.origin.y;
-            scrollViewFrame.size.width += infoFrame.size.width;
-            scrollViewFrame.size.height = infoFrame.size.height;
-        }
-        scrollView = [[NSScrollView alloc] initWithFrame:scrollViewFrame];
-        scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-        scrollView.drawsBackground = NO;
-        scrollView.hasVerticalScroller = YES;
-        scrollView.hasHorizontalScroller = NO;
-        scrollView.borderType = NSNoBorder;
-        scrollView.contentView.copiesOnScroll = NO;
 
-        NSRect documentRect = scrollView.bounds;
-        documentRect.size.height = MAX(documentRect.size.height, self.controller.totalLineCount * self.controller.lineHeight);
-        NSLog(@"documentRect: %@", NSStringFromRect(documentRect));
-        NSView *documentView = [[NSView alloc] initWithFrame:documentRect];
-        for (HFRepresenterLayoutViewInfo *info in layoutInfoArray) {
-            NSView *view = info->view;
-            NSRect frame = info->frame;
-            frame.origin.y = documentView.bounds.origin.y;
-            frame.size.height = documentRect.size.height;
-            view.frame = frame;
-            NSLog(@"%@: %@", view, NSStringFromRect(view.frame));
-            [documentView addSubview:view];
-        }
-        scrollView.documentView = documentView;
+    NSRect scrollViewFrame = NSZeroRect;
+    for (HFRepresenterLayoutViewInfo *info in layoutInfoArray) {
+        const NSRect infoFrame = info->frame;
+        scrollViewFrame.origin.y = infoFrame.origin.y;
+        scrollViewFrame.size.width += infoFrame.size.width;
+        scrollViewFrame.size.height = infoFrame.size.height;
+    }
+    scrollView = [[NSScrollView alloc] initWithFrame:scrollViewFrame];
+    scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    scrollView.drawsBackground = NO;
+    scrollView.hasVerticalScroller = YES;
+    scrollView.hasHorizontalScroller = NO;
+    scrollView.borderType = NSNoBorder;
+    scrollView.contentView.copiesOnScroll = NO;
 
-        [self.view addSubview:scrollView];
-    }}
+    NSRect documentRect = scrollView.bounds;
+    documentRect.size.height = MAX(documentRect.size.height, self.controller.totalLineCount * self.controller.lineHeight);
+    NSLog(@"documentRect: %@", NSStringFromRect(documentRect));
+    NSView *documentView = [[NSView alloc] initWithFrame:documentRect];
+    for (HFRepresenterLayoutViewInfo *info in layoutInfoArray) {
+        NSView *view = info->view;
+        NSRect frame = info->frame;
+        frame.origin.y = documentView.bounds.origin.y;
+        frame.size.height = documentRect.size.height;
+        view.frame = frame;
+        [documentView addSubview:view];
+    }
+    scrollView.documentView = documentView;
+
+    // scroll to the top
+    NSPoint topPoint = NSMakePoint(documentView.bounds.origin.x, documentView.bounds.origin.y + documentView.bounds.size.height);
+    [documentView scrollPoint:topPoint];
+
+    [self.view addSubview:scrollView];
+}
 
 - (NSArray *)representers {
     return representers ? [representers copy] : @[];

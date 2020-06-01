@@ -229,6 +229,7 @@ static const CGFloat kShadowWidth = 6;
 }
 
 - (void)drawRect:(NSRect)clipRect {
+    NSLog(@"CLIP: %@", NSStringFromRect(clipRect));
     [self drawGradientWithClip:clipRect];
     [self drawDividerWithClip:clipRect];
     [self drawLineNumbersWithClipSingleStringDrawing:clipRect];
