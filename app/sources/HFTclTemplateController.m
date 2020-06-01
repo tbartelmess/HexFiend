@@ -7,14 +7,11 @@
 //
 
 #import "HFTclTemplateController.h"
-#import <tcl.h>
-#import <tclTomMath.h>
+#import <Tcl/tcl.h>
+#import <Tcl/tclTomMath.h>
 #import <zlib.h>
 #import "HFFunctions_Private.h"
 #import <HexFiend/HFEncodingManager.h>
-
-// Tcl_ParseArgsObjv was added in Tcl 8.6, but macOS ships with Tcl 8.5
-#import "Tcl_ParseArgsObjv.h"
 
 static Tcl_Obj* tcl_obj_from_uint64(uint64_t value) {
     char buf[21];

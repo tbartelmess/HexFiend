@@ -36,6 +36,8 @@
 		9483479419DE1C920086A732 /* TreeEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = D06D60BC0FA7EA23002376EE /* TreeEntry.m */; };
 		9483479519DE1C950086A732 /* BTree_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = D06D60A50FA7E980002376EE /* BTree_Test.m */; };
 		94ECCBC01BDF7DD2007FF44E /* HexFiend.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01E7BB80CDC530C00943F9E /* HexFiend.framework */; };
+		A5191B6D234014D700CE29F3 /* Tcl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5191B63234011E300CE29F3 /* Tcl.framework */; };
+		A5191B6E234014D700CE29F3 /* Tcl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A5191B63234011E300CE29F3 /* Tcl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A51D0E7B20F1CB7F00B55775 /* HFController.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A6C9D70DCC68610077175C /* HFController.h */; };
 		A51D0E7C20F1CB7F00B55775 /* HFController.m in Sources */ = {isa = PBXBuildFile; fileRef = D01E7BEB0CDC55D000943F9E /* HFController.m */; };
 		A51D0E7E20F1D01A00B55775 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A51D0E7D20F1D01A00B55775 /* UIKit.framework */; };
@@ -70,7 +72,6 @@
 		A5589ACC2206D238000293A4 /* OpenAccessoryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A5589ACA2206D238000293A4 /* OpenAccessoryView.xib */; };
 		A5589ACF2206D3C8000293A4 /* HFOpenAccessoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A5589ACE2206D3C8000293A4 /* HFOpenAccessoryViewController.m */; };
 		A5589AD22206E1C4000293A4 /* ExtendedAttributeDataDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = A5589AD12206E1C4000293A4 /* ExtendedAttributeDataDocument.m */; };
-		A5628AAB21D8561D00911ABB /* Tcl_ParseArgsObjv.c in Sources */ = {isa = PBXBuildFile; fileRef = A5628AA921D8561C00911ABB /* Tcl_ParseArgsObjv.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		A567D7D520DA1D7C00F7C0A4 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A567D7D420DA1D7C00F7C0A4 /* Sparkle.framework */; };
 		A567D7D620DA1D9100F7C0A4 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A567D7D420DA1D7C00F7C0A4 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A56D78161E7EF088001D1892 /* CLIController.m in Sources */ = {isa = PBXBuildFile; fileRef = A56D78151E7EF088001D1892 /* CLIController.m */; };
@@ -95,7 +96,6 @@
 		A591314021E3098800685B51 /* DataInspectorScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = A591313F21E3098800685B51 /* DataInspectorScrollView.m */; };
 		A59BC5712001AB8C0066860F /* HFBinaryTemplateRepresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC5702001AB8C0066860F /* HFBinaryTemplateRepresenter.m */; };
 		A59BC5922001FB9A0066860F /* HFTclTemplateController.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC5912001FB9A0066860F /* HFTclTemplateController.m */; };
-		A59BC5942001FD0F0066860F /* Tcl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A59BC5932001FD0F0066860F /* Tcl.framework */; };
 		A59BC59820020B480066860F /* HFBinaryTemplateController.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC59620020B480066860F /* HFBinaryTemplateController.m */; };
 		A59BC59C2002113F0066860F /* HFTemplateNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC59B2002113F0066860F /* HFTemplateNode.m */; };
 		A59BC59F2002E63C0066860F /* HFTemplateController.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC59E2002E63C0066860F /* HFTemplateController.m */; };
@@ -366,6 +366,7 @@
 			files = (
 				D047E4CA1022E1CA00EF307B /* HexFiend.framework in Copy Frameworks */,
 				A567D7D620DA1D9100F7C0A4 /* Sparkle.framework in Copy Frameworks */,
+				A5191B6E234014D700CE29F3 /* Tcl.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -409,6 +410,7 @@
 		9408FBFE19DD72DF004F800E /* Framework_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Framework_Tests.m; sourceTree = "<group>"; };
 		9408FC0F19DD8669004F800E /* HFPrivilegedHelperConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFPrivilegedHelperConnection.h; path = sources/HFPrivilegedHelperConnection.h; sourceTree = "<group>"; };
 		9483478F19DE188E0086A732 /* HFTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFTest.h; sourceTree = "<group>"; };
+		A5191B63234011E300CE29F3 /* Tcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tcl.framework; path = ../../Downloads/build/tcl/Tcl.framework; sourceTree = "<group>"; };
 		A51D0E7D20F1D01A00B55775 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A51D0E8B20F1E56600B55775 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		A51D0E9020F2A8D200B55775 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -439,8 +441,6 @@
 		A5589ACE2206D3C8000293A4 /* HFOpenAccessoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HFOpenAccessoryViewController.m; path = app/sources/HFOpenAccessoryViewController.m; sourceTree = "<group>"; };
 		A5589AD02206E1C4000293A4 /* ExtendedAttributeDataDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExtendedAttributeDataDocument.h; path = app/sources/ExtendedAttributeDataDocument.h; sourceTree = "<group>"; };
 		A5589AD12206E1C4000293A4 /* ExtendedAttributeDataDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ExtendedAttributeDataDocument.m; path = app/sources/ExtendedAttributeDataDocument.m; sourceTree = "<group>"; };
-		A5628AA921D8561C00911ABB /* Tcl_ParseArgsObjv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Tcl_ParseArgsObjv.c; path = app/sources/Tcl_ParseArgsObjv.c; sourceTree = "<group>"; };
-		A5628AAA21D8561C00911ABB /* Tcl_ParseArgsObjv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tcl_ParseArgsObjv.h; path = app/sources/Tcl_ParseArgsObjv.h; sourceTree = "<group>"; };
 		A567D7D420DA1D7C00F7C0A4 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = vendor/Sparkle.framework; sourceTree = "<group>"; };
 		A56D78141E7EF088001D1892 /* CLIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLIController.h; path = app/sources/CLIController.h; sourceTree = "<group>"; };
 		A56D78151E7EF088001D1892 /* CLIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLIController.m; path = app/sources/CLIController.m; sourceTree = "<group>"; };
@@ -465,7 +465,6 @@
 		A59BC5702001AB8C0066860F /* HFBinaryTemplateRepresenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HFBinaryTemplateRepresenter.m; path = app/sources/HFBinaryTemplateRepresenter.m; sourceTree = "<group>"; };
 		A59BC5902001FB9A0066860F /* HFTclTemplateController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HFTclTemplateController.h; path = app/sources/HFTclTemplateController.h; sourceTree = "<group>"; };
 		A59BC5912001FB9A0066860F /* HFTclTemplateController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HFTclTemplateController.m; path = app/sources/HFTclTemplateController.m; sourceTree = "<group>"; };
-		A59BC5932001FD0F0066860F /* Tcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tcl.framework; path = System/Library/Frameworks/Tcl.framework; sourceTree = SDKROOT; };
 		A59BC59520020B480066860F /* HFBinaryTemplateController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HFBinaryTemplateController.h; path = app/sources/HFBinaryTemplateController.h; sourceTree = "<group>"; };
 		A59BC59620020B480066860F /* HFBinaryTemplateController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HFBinaryTemplateController.m; path = app/sources/HFBinaryTemplateController.m; sourceTree = "<group>"; };
 		A59BC59A2002113F0066860F /* HFTemplateNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HFTemplateNode.h; path = app/sources/HFTemplateNode.h; sourceTree = "<group>"; };
@@ -666,8 +665,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A5D8C8F220E9E58000103D60 /* libz.1.tbd in Frameworks */,
-				A59BC5942001FD0F0066860F /* Tcl.framework in Frameworks */,
 				795F46C314BAADB600EB2F7D /* DiskArbitration.framework in Frameworks */,
+				A5191B6D234014D700CE29F3 /* Tcl.framework in Frameworks */,
 				A567D7D520DA1D7C00F7C0A4 /* Sparkle.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				94ECCBC01BDF7DD2007FF44E /* HexFiend.framework in Frameworks */,
@@ -798,13 +797,13 @@
 				A51D0E7D20F1D01A00B55775 /* UIKit.framework */,
 				A5D8C8F120E9E58000103D60 /* libz.1.tbd */,
 				A567D7D420DA1D7C00F7C0A4 /* Sparkle.framework */,
-				A59BC5932001FD0F0066860F /* Tcl.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 				795F46C214BAADB600EB2F7D /* DiskArbitration.framework */,
 				D0D4BE84146F43A1001B0A71 /* ServiceManagement.framework */,
 				D05984CB1032C6D900059E72 /* Security.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+				A5191B63234011E300CE29F3 /* Tcl.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -899,8 +898,6 @@
 				A59BC59620020B480066860F /* HFBinaryTemplateController.m */,
 				A59BC59A2002113F0066860F /* HFTemplateNode.h */,
 				A59BC59B2002113F0066860F /* HFTemplateNode.m */,
-				A5628AAA21D8561C00911ABB /* Tcl_ParseArgsObjv.h */,
-				A5628AA921D8561C00911ABB /* Tcl_ParseArgsObjv.c */,
 			);
 			name = "Binary Templates";
 			sourceTree = "<group>";
@@ -1741,7 +1738,6 @@
 				A5589AC92206CFCC000293A4 /* HFExtendedAttributes.m in Sources */,
 				D0CBB32A128F906000989C15 /* DiffTextViewContainer.m in Sources */,
 				A5589ACF2206D3C8000293A4 /* HFOpenAccessoryViewController.m in Sources */,
-				A5628AAB21D8561D00911ABB /* Tcl_ParseArgsObjv.c in Sources */,
 				D0D8C2BC12A3C10100960FC4 /* ChooseStringEncodingWindowController.m in Sources */,
 				A59BC5922001FB9A0066860F /* HFTclTemplateController.m in Sources */,
 				A56D78161E7EF088001D1892 /* CLIController.m in Sources */,
@@ -2722,8 +2718,9 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -2890,8 +2887,9 @@
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -3055,8 +3053,9 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -3240,8 +3239,9 @@
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -3438,8 +3438,9 @@
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -3641,8 +3642,9 @@
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
@@ -3835,8 +3837,9 @@
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
+					/Users/kainjow/Downloads/build/tcl,
 					"$(PROJECT_DIR)/vendor",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = app/sources/HexFiend_2_Prefix.pch;
