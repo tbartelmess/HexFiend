@@ -254,9 +254,9 @@
 }
 
 #if !TARGET_OS_IPHONE
-- (void)scrollWheel:(NSEvent *)event {
+/*- (void)scrollWheel:(NSEvent *)event {
     [[self controller] scrollWithScrollEvent:event];
-}
+}*/
 #endif
 
 - (void)selectAll:(id)sender {

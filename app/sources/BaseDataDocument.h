@@ -16,6 +16,8 @@ extern NSString * const BaseDataDocumentDidChangeStringEncodingNotification;
 
 @interface BaseDataDocument : NSDocument <NSWindowDelegate, DragDropDelegate> {
     IBOutlet NSView *containerView;
+    NSScrollView *containerViewScrollView;
+
     HFController *controller;
     
     HFColumnRepresenter *columnRepresenter;

@@ -2029,9 +2029,9 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     [self interpretKeyEvents:@[event]];
 }
 
-- (void)scrollWheel:(NSEvent *)event {
+/*- (void)scrollWheel:(NSEvent *)event {
     [[self representer] scrollWheel:event];
-}
+}*/
 #endif
 
 - (void)insertText:(id)string {

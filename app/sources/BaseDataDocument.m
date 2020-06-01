@@ -120,7 +120,7 @@ static inline Class preferredByteArrayClass(void) {
             USERDEFS_KEY_FOR_REP(asciiRepresenter) : @YES,
             USERDEFS_KEY_FOR_REP(dataInspectorRepresenter) : @YES,
             USERDEFS_KEY_FOR_REP(statusBarRepresenter) : @YES,
-            USERDEFS_KEY_FOR_REP(scrollRepresenter) : @YES,
+            //USERDEFS_KEY_FOR_REP(scrollRepresenter) : @YES,
         };
         [[NSUserDefaults standardUserDefaults] registerDefaults:defs];
     }
@@ -142,7 +142,7 @@ static inline Class preferredByteArrayClass(void) {
             USERDEFS_KEY_FOR_REP(asciiRepresenter) : @YES,
             USERDEFS_KEY_FOR_REP(dataInspectorRepresenter) : @YES,
             USERDEFS_KEY_FOR_REP(statusBarRepresenter) : @YES,
-            USERDEFS_KEY_FOR_REP(scrollRepresenter) : @YES,
+            //USERDEFS_KEY_FOR_REP(scrollRepresenter) : @YES,
 #if ! NDEBUG
             @"NSApplicationShowExceptions" : @YES,
 #endif
@@ -170,7 +170,7 @@ static inline Class preferredByteArrayClass(void) {
         lineCountingRepresenter,
         hexRepresenter,
         asciiRepresenter,
-        scrollRepresenter,
+        //scrollRepresenter,
         dataInspectorRepresenter,
         statusBarRepresenter,
         textDividerRepresenter,
@@ -235,7 +235,7 @@ static inline Class preferredByteArrayClass(void) {
     [shownRepresentersData setObject:asciiRepresenter forKey:USERDEFS_KEY_FOR_REP(asciiRepresenter)];
     [shownRepresentersData setObject:dataInspectorRepresenter forKey:USERDEFS_KEY_FOR_REP(dataInspectorRepresenter)];
     [shownRepresentersData setObject:statusBarRepresenter forKey:USERDEFS_KEY_FOR_REP(statusBarRepresenter)];
-    [shownRepresentersData setObject:scrollRepresenter forKey:USERDEFS_KEY_FOR_REP(scrollRepresenter)];
+    //[shownRepresentersData setObject:scrollRepresenter forKey:USERDEFS_KEY_FOR_REP(scrollRepresenter)];
     [shownRepresentersData setObject:binaryTemplateRepresenter forKey:USERDEFS_KEY_FOR_REP(binaryTemplateRepresenter)];
     NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
     NSEnumerator *keysEnum = [shownRepresentersData keyEnumerator];
@@ -465,11 +465,25 @@ static inline Class preferredByteArrayClass(void) {
     [controller addRepresenter:layoutRepresenter];
     
     NSView *layoutView = [layoutRepresenter view];
-    [layoutView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+    [layoutView setAutoresizingMask:NSViewNotSizable];
     
     if (containerView) {
-        [layoutView setFrame:[containerView bounds]];
-        [containerView addSubview:layoutView];
+        NSRect scrollViewFrame = containerView.bounds;
+        containerViewScrollView = [[NSScrollView alloc] initWithFrame:scrollViewFrame];
+        containerViewScrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+        containerViewScrollView.drawsBackground = NO;
+        containerViewScrollView.hasVerticalScroller = YES;
+        containerViewScrollView.hasHorizontalScroller = NO;
+        containerViewScrollView.borderType = NSNoBorder;
+        containerViewScrollView.contentView.copiesOnScroll = NO;
+
+        NSRect layoutRect = containerViewScrollView.bounds;
+        layoutRect.size.height = MAX(layoutRect.size.height, controller.totalLineCount * controller.lineHeight);
+        [layoutView setFrame:layoutRect];
+        NSLog(@"HEIGHT: %f", layoutRect.size.height);
+        containerViewScrollView.documentView = layoutView;
+
+        [containerView addSubview:containerViewScrollView];
     }
     [self applyDefaultRepresentersToDisplay];
     
@@ -636,7 +650,7 @@ static inline Class preferredByteArrayClass(void) {
     lineCountingRepresenter = [[HFLineCountingRepresenter alloc] init];
     hexRepresenter = [[HFHexTextRepresenter alloc] init];
     asciiRepresenter = [[HFStringEncodingTextRepresenter alloc] init];
-    scrollRepresenter = [[HFVerticalScrollerRepresenter alloc] init];
+    //scrollRepresenter = [[HFVerticalScrollerRepresenter alloc] init];
     statusBarRepresenter = [[HFStatusBarRepresenter alloc] init];
     dataInspectorRepresenter = [[DataInspectorRepresenter alloc] init];
     textDividerRepresenter = [[TextDividerRepresenter alloc] init];

@@ -36,6 +36,7 @@
 		9483479419DE1C920086A732 /* TreeEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = D06D60BC0FA7EA23002376EE /* TreeEntry.m */; };
 		9483479519DE1C950086A732 /* BTree_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = D06D60A50FA7E980002376EE /* BTree_Test.m */; };
 		94ECCBC01BDF7DD2007FF44E /* HexFiend.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01E7BB80CDC530C00943F9E /* HexFiend.framework */; };
+		A50807E024721ED20060B035 /* LayoutRepresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = A50807DE24721ED10060B035 /* LayoutRepresenter.m */; };
 		A51D0E7B20F1CB7F00B55775 /* HFController.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A6C9D70DCC68610077175C /* HFController.h */; };
 		A51D0E7C20F1CB7F00B55775 /* HFController.m in Sources */ = {isa = PBXBuildFile; fileRef = D01E7BEB0CDC55D000943F9E /* HFController.m */; };
 		A51D0E7E20F1D01A00B55775 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A51D0E7D20F1D01A00B55775 /* UIKit.framework */; };
@@ -409,6 +410,8 @@
 		9408FBFE19DD72DF004F800E /* Framework_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Framework_Tests.m; sourceTree = "<group>"; };
 		9408FC0F19DD8669004F800E /* HFPrivilegedHelperConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HFPrivilegedHelperConnection.h; path = sources/HFPrivilegedHelperConnection.h; sourceTree = "<group>"; };
 		9483478F19DE188E0086A732 /* HFTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HFTest.h; sourceTree = "<group>"; };
+		A50807DE24721ED10060B035 /* LayoutRepresenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LayoutRepresenter.m; path = app/sources/LayoutRepresenter.m; sourceTree = "<group>"; };
+		A50807DF24721ED20060B035 /* LayoutRepresenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LayoutRepresenter.h; path = app/sources/LayoutRepresenter.h; sourceTree = "<group>"; };
 		A51D0E7D20F1D01A00B55775 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A51D0E8B20F1E56600B55775 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		A51D0E9020F2A8D200B55775 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.0.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -1158,6 +1161,8 @@
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				D0CD51F40DA2B928006E8D1B /* AppDelegate.h */,
 				D0CD51F50DA2B928006E8D1B /* AppDelegate.m */,
+				A50807DF24721ED20060B035 /* LayoutRepresenter.h */,
+				A50807DE24721ED10060B035 /* LayoutRepresenter.m */,
 				D02BD6D910545E7B00535EDE /* DocumentTypes */,
 				D084E75C115DAE90004DC181 /* DiffDocument */,
 				D0D8C45C12A3EF3F00960FC4 /* Dialogs */,
@@ -1748,6 +1753,7 @@
 				D059E1291311C676001493B8 /* AppDebugging.m in Sources */,
 				D01EF15413B2A0D300CC9283 /* TextDividerRepresenter.m in Sources */,
 				A5589AD22206E1C4000293A4 /* ExtendedAttributeDataDocument.m in Sources */,
+				A50807E024721ED20060B035 /* LayoutRepresenter.m in Sources */,
 				D0A8AF7D1467273900387627 /* AppUtilities.m in Sources */,
 				D0D0536E1487FF2500704643 /* HFFindReplaceOperationView.m in Sources */,
 				A59BC59820020B480066860F /* HFBinaryTemplateController.m in Sources */,

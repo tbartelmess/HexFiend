@@ -7,6 +7,14 @@
 
 #import <HexFiend/HFLayoutRepresenter.h>
 
+@interface MyView : NSView
+@end
+@implementation MyView
+- (void)drawRect:(NSRect)dirtyRect {
+    NSLog(@"MyView: %@", NSStringFromRect(dirtyRect));
+}
+@end
+
 @interface HFRepresenterLayoutViewInfo : NSObject {
 @public
     HFRepresenter *rep;
@@ -315,7 +323,7 @@ static NSInteger sortByLayoutPosition(id a, id b, void *self) {
 }
 
 - (NSView *)createView {
-    return [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+    return [[MyView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
 }
 
 - (void)setMaximizesBytesPerLine:(BOOL)val {

@@ -201,12 +201,12 @@ static const CGFloat kShadowWidth = 6;
     return string;
 }
 
-- (void)drawLineNumbersWithClipSingleStringDrawing {
+- (void)drawLineNumbersWithClipSingleStringDrawing:(NSRect)clipRect {
     unsigned long long lineIndex = HFFPToUL(floorl(_lineRangeToDraw.location));
     NSUInteger linesRemaining = ll2l(HFFPToUL(ceill(_lineRangeToDraw.length + _lineRangeToDraw.location) - floorl(_lineRangeToDraw.location)));
     
     CGFloat verticalOffset = [HFTextRepresenter verticalOffsetForLineRange:_lineRangeToDraw];
-    NSRect textRect = self.bounds;
+    NSRect textRect = clipRect;
     textRect.size.width -= (kShadowWidth - 1);
     textRect.origin.y -= (verticalOffset * _lineHeight);
     textRect.size.height += (verticalOffset * _lineHeight) + _lineHeight;
@@ -231,7 +231,7 @@ static const CGFloat kShadowWidth = 6;
 - (void)drawRect:(NSRect)clipRect {
     [self drawGradientWithClip:clipRect];
     [self drawDividerWithClip:clipRect];
-    [self drawLineNumbersWithClipSingleStringDrawing];
+    [self drawLineNumbersWithClipSingleStringDrawing:clipRect];
 }
 
 - (void)setLineRangeToDraw:(HFFPRange)range {
@@ -276,9 +276,9 @@ static const CGFloat kShadowWidth = 6;
     [_representer cycleLineNumberFormat];
 }
 
-- (void)scrollWheel:(NSEvent *)scrollEvent {
+/*- (void)scrollWheel:(NSEvent *)scrollEvent {
     [_representer.controller scrollWithScrollEvent:scrollEvent];
-}
+}*/
 
 + (NSUInteger)digitsRequiredToDisplayLineNumber:(unsigned long long)lineNumber inFormat:(HFLineNumberFormat)format {
     switch (format) {
