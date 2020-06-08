@@ -38,6 +38,7 @@ enum command {
     command_double,
     command_macdate,
     command_fatdate,
+    command_fattime,
     command_unixtime32,
     command_unixtime64,
     command_bytes,
@@ -88,6 +89,7 @@ DEFINE_COMMAND(float)
 DEFINE_COMMAND(double)
 DEFINE_COMMAND(macdate)
 DEFINE_COMMAND(fatdate)
+DEFINE_COMMAND(fattime)
 DEFINE_COMMAND(unixtime32)
 DEFINE_COMMAND(unixtime64)
 DEFINE_COMMAND(big_endian)
@@ -152,6 +154,7 @@ DEFINE_COMMAND(uint64_bits)
         CMD(double),
         CMD(macdate),
         CMD(fatdate),
+        CMD(fattime),
         CMD(unixtime32),
         CMD(unixtime64),
         CMD(big_endian),
@@ -280,6 +283,7 @@ DEFINE_COMMAND(uint64_bits)
         case command_double:
         case command_macdate:
         case command_fatdate:
+        case command_fattime:
         case command_unixtime32:
         case command_unixtime64:
         case command_uuid:
@@ -608,15 +612,20 @@ DEFINE_COMMAND(uint64_bits)
             const char *arg = Tcl_GetStringFromObj(extraArgs[i], NULL);
             if (arg && arg[0] == '-') {
                 Tcl_SetObjResult(_interp, Tcl_ObjPrintf("Unknown option %s", arg));
+                ckfree((char *)extraArgs);
                 return TCL_ERROR;
             }
         }
         if (objc > 2) {
             const char *usage = hexSwitchAllowed ? "[-hex] [label]" : "[label";
             Tcl_WrongNumArgs(_interp, 0, objv, usage);
+            ckfree((char *)extraArgs);
             return TCL_ERROR;
         }
         label = [NSString stringWithUTF8String:Tcl_GetStringFromObj(extraArgs[1], NULL)];
+    }
+    if (objc > 0) {
+        ckfree((char *)extraArgs);
     }
     switch (command) {
         case command_uint64: {
@@ -735,6 +744,16 @@ DEFINE_COMMAND(uint64_bits)
                 return TCL_ERROR;
             }
             Tcl_SetObjResult(_interp, Tcl_NewStringObj(date.UTF8String, -1));
+            break;
+        }
+        case command_fattime: {
+            NSString *timeErr = nil;
+            NSString *time = [self readFatTimeWithLabel:label error:&timeErr];
+            if (!time) {
+                Tcl_SetObjResult(_interp, Tcl_NewStringObj(timeErr.UTF8String, -1));
+                return TCL_ERROR;
+            }
+            Tcl_SetObjResult(_interp, Tcl_NewStringObj(time.UTF8String, -1));
             break;
         }
         case command_unixtime32:

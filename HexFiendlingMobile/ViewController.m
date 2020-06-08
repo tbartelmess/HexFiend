@@ -25,11 +25,15 @@
 
 - (void)setUpInMemoryHexView {
     /* Get some random data to display */
+#if 0
     const unsigned int dataSize = 1024;
     NSMutableData *data = [NSMutableData dataWithLength:dataSize];
     int fd = open("/dev/random", O_RDONLY);
     read(fd, [data mutableBytes], dataSize);
     close(fd);
+#else
+    NSMutableData *data = [[@"hello world" dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+#endif
     
     /* Make a controller to hook everything up, and then configure it a bit. */
     self.inMemoryController = [[HFController alloc] init];
@@ -48,7 +52,7 @@
     /* Grab its view and stick it into our container. */
     UIView *containerView = self.view;
     UIView *hexView = [hexRep view];
-    //hexView.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5];
+    hexView.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5];
     hexView.frame = CGRectInset(containerView.bounds, 20, 20);
     hexView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     hexView.translatesAutoresizingMaskIntoConstraints = YES;

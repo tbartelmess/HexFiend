@@ -14,6 +14,7 @@
 #import <HexFiend/HFFunctions.h>
 #import "HFRepresenterTextViewCallout.h"
 #import <objc/message.h>
+#import <CoreText/CoreText.h>
 
 static const NSTimeInterval HFCaretBlinkFrequency = 0.56;
 
@@ -469,7 +470,7 @@ enum LineCoverage_t {
                 } else {
                     [[NSColor blackColor] set];
                 }
-                [[self.font screenFont] set];
+                [self.font set];
                 if (! [self shouldAntialias]) CGContextSetShouldAntialias(ctx, NO);
                 CGContextScaleCTM(ctx, imageScale, imageScale);
                 CGContextTranslateCTM(ctx, -windowFrameInBoundsCoords.origin.x, -windowFrameInBoundsCoords.origin.y);
@@ -662,9 +663,9 @@ enum LineCoverage_t {
     [coder encodeInt64:bytesBetweenVerticalGuides forKey:@"HFBytesBetweenVerticalGuides"];
     [coder encodeInt64:startingLineBackgroundColorIndex forKey:@"HFStartingLineBackgroundColorIndex"];
     [coder encodeObject:rowBackgroundColors forKey:@"HFRowBackgroundColors"];
-    [coder encodeBool:_hftvflags.antialias forKey:@"HFAntialias"];
-    [coder encodeBool:_hftvflags.drawCallouts forKey:@"HFDrawCallouts"];
-    [coder encodeBool:_hftvflags.editable forKey:@"HFEditable"];
+    [coder encodeBool:_hftvflags.antialias ? YES : NO forKey:@"HFAntialias"];
+    [coder encodeBool:_hftvflags.drawCallouts ? YES : NO forKey:@"HFDrawCallouts"];
+    [coder encodeBool:_hftvflags.editable ? YES : NO forKey:@"HFEditable"];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -864,7 +865,7 @@ enum LineCoverage_t {
 
 - (void)dealloc {
 #if !TARGET_OS_IPHONE
-    HFUnregisterViewForWindowAppearanceChanges(self, _hftvflags.registeredForAppNotifications /* appToo */);
+    HFUnregisterViewForWindowAppearanceChanges(self, _hftvflags.registeredForAppNotifications ? YES : NO /* appToo */);
 #endif
     [caretTimer invalidate];
 }
@@ -1391,9 +1392,9 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
             /* Check if this run is finished, or if we are using a substitution font */
             if (i == glyphCount || glyphs[i].fontIndex != runFontIndex || runFontIndex > 0) {
                 /* Draw this run */
-#if !TARGET_OS_IPHONE
                 HFFont *fontToUse = [self fontAtSubstitutionIndex:runFontIndex];
-                [[fontToUse screenFont] set];
+#if !TARGET_OS_IPHONE
+                [fontToUse set];
 #endif
                 CGContextSetTextPosition(ctx, point.x + runAdvance, point.y);
                 
@@ -1417,7 +1418,21 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
                 }
                 
                 /* Draw the glyphs */
-                CGContextShowGlyphsWithAdvances(ctx, cgglyphs + runStart, advances + runStart, i - runStart);
+                const CGGlyph *glyphsPtr = cgglyphs + runStart;
+                const CGSize *advancesPtr = advances + runStart;
+                const size_t numGlyphs = i - runStart;
+#if 0
+                CGContextShowGlyphsWithAdvances(ctx, glyphsPtr, advancesPtr, numGlyphs);
+#else
+                CGPoint positions[numGlyphs];
+                memset(positions, 0, sizeof(positions));
+                CGFloat x = 0;
+                for (size_t p = 0; p < numGlyphs; p++) {
+                    positions[p].x = x;
+                    x += advancesPtr[p].width;
+                }
+                CTFontDrawGlyphs((CTFontRef)fontToUse, glyphsPtr, positions, numGlyphs, ctx);
+#endif
                 
                 /* Record the new run */
                 if (i < glyphCount) {                    
@@ -1498,11 +1513,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     
     NSUInteger lineStartIndex, bytesPerLine = [self bytesPerLine];
     NSData *dataObject = [self data];
-#if TARGET_OS_IPHONE
-    UIFont *fontObject = [self font];
-#else
-    NSFont *fontObject = [[self font] screenFont];
-#endif
+    HFFont *fontObject = [self font];
     //const NSUInteger bytesPerChar = [self bytesPerCharacter];
     const NSUInteger byteCount = [dataObject length];
     
@@ -1630,7 +1641,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 }
 
 - (BOOL)shouldDrawCallouts {
-    return _hftvflags.drawCallouts;
+    return _hftvflags.drawCallouts ? YES : NO;
 }
 
 - (void)setShouldDrawCallouts:(BOOL)val {
@@ -1680,8 +1691,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     BOOL antialias = [self shouldAntialias];
     
 #if !TARGET_OS_IPHONE
-    [[self.font screenFont] set];
-    
+    [self.font set];
     if ([self showsFocusRing]) {
         NSWindow *window = [self window];
         if (self == [window firstResponder] && [window isKeyWindow]) {
@@ -1788,18 +1798,35 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 }
 
 #if !TARGET_OS_IPHONE
-- (void)setFrameSize:(NSSize)size {
+- (void)setFrameSize:(NSSize)size
+#else
+- (void)setFrame:(CGRect)frame
+#endif
+{
+    if ([self representer] == nil) {
+#if !TARGET_OS_IPHONE
+        [super setFrameSize:size];
+#else
+        [super setFrame:frame];
+#endif
+        return;
+    }
     NSUInteger currentBytesPerLine = [self bytesPerLine];
-    double currentLineCount = [self maximumAvailableLinesForViewHeight:NSHeight([self bounds])];
+    double currentLineCount = [self maximumAvailableLinesForViewHeight:[self bounds].size.height];
+#if !TARGET_OS_IPHONE
+    CGSize frameSize = size;
     [super setFrameSize:size];
-    NSUInteger newBytesPerLine = [self maximumBytesPerLineForViewWidth:size.width];
-    double newLineCount = [self maximumAvailableLinesForViewHeight:NSHeight([self bounds])];
+#else
+    CGSize frameSize = frame.size;
+    [super setFrame:frame];
+#endif
+    NSUInteger newBytesPerLine = [self maximumBytesPerLineForViewWidth:frameSize.width];
+    double newLineCount = [self maximumAvailableLinesForViewHeight:[self bounds].size.height];
     HFControllerPropertyBits bits = 0;
     if (newBytesPerLine != currentBytesPerLine) bits |= (HFControllerBytesPerLine | HFControllerDisplayedLineRange);
     if (newLineCount != currentLineCount) bits |= HFControllerDisplayedLineRange;
     if (bits) [[self representer] representerChangedProperties:bits];
 }
-#endif
 
 - (CGFloat)advanceBetweenColumns {
     UNIMPLEMENTED();
@@ -1871,7 +1898,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 }
 
 - (BOOL)isEditable {
-    return _hftvflags.editable;
+    return _hftvflags.editable ? YES : NO;
 }
 
 - (void)setEditable:(BOOL)val {
@@ -1884,7 +1911,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 }
 
 - (BOOL)shouldAntialias {
-    return _hftvflags.antialias;
+    return _hftvflags.antialias ? YES : NO;
 }
 
 - (void)setShouldAntialias:(BOOL)val {
@@ -1905,7 +1932,7 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 }
 
 - (BOOL)isWithinMouseDown {
-    return _hftvflags.withinMouseDown;
+    return _hftvflags.withinMouseDown ? YES : NO;
 }
 
 #if !TARGET_OS_IPHONE

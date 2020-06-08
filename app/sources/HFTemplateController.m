@@ -399,6 +399,26 @@ static const unsigned long long kMaxCacheSize = 1024 * 1024;
     return date;
 }
 
+- (NSString *)readFatTimeWithLabel:(NSString *)label error:(NSString **)error {
+    int16_t val;
+    if (![self readInt16:&val forLabel:nil]) {
+        if (error) {
+            *error = @"Failed to read int16 bytes";
+        }
+        return nil;
+    }
+
+    int sec = (val & 0x1F) * 2;
+    int min = (val >> 5) & 0x3F;
+    int hour = (val >> 11) & 0x1F;
+    NSString *time = [NSString stringWithFormat:@"%02d:%02d:%02d", hour, min, sec];
+
+    if (label) {
+        [self addNodeWithLabel:label value:time size:sizeof(val)];
+    }
+    return time;
+}
+
 - (NSDate *)readUnixTime:(unsigned)numBytes forLabel:(NSString *)label error:(NSString **)error {
     time_t t;
     if (numBytes == 4) {
@@ -526,15 +546,21 @@ static const unsigned long long kMaxCacheSize = 1024 * 1024;
 }
 
 - (void)addEntryWithLabel:(NSString *)label value:(NSString *)value length:(unsigned long long *)length offset:(unsigned long long *)offset {
-    HFTemplateNode *node = [[HFTemplateNode alloc] initWithLabel:label value:value];
-    if (length && offset) {
-        node.range = HFRangeMake(self.anchor + *offset, *length);
-    } else if (length) {
-        node.range = HFRangeMake(self.anchor + self.position, *length);
+    HFTemplateNode *currentNode = self.currentNode;
+    HFTemplateNode *newNode = [[HFTemplateNode alloc] initWithLabel:label value:value];
+    if (length) {
+        if (offset) {
+            newNode.range = HFRangeMake(self.anchor + *offset, *length);
+        } else {
+            newNode.range = HFRangeMake(self.anchor + self.position, *length);
+        }
+        unsigned long long newloc = MIN(currentNode.range.location, newNode.range.location);
+        unsigned long long newlen = MAX(currentNode.range.location + currentNode.range.length, newNode.range.location + newNode.range.length) - newloc;
+        currentNode.range = HFRangeMake(newloc, newlen);
     } else if (offset) {
         HFASSERT(0); // invalid state
     }
-    [self.currentNode.children addObject:node];
+    [currentNode.children addObject:newNode];
 }
 
 - (BOOL)readBits:(NSString *)bits byteCount:(unsigned)numberOfBytes forLabel:(NSString *)label result:(uint64 *)result error:(NSString **)error {
