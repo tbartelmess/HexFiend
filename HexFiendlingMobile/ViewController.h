@@ -10,4 +10,6 @@
 
 @interface ViewController : UIViewController
 
+@property (weak) IBOutlet UIView *mainView;
+
 @end

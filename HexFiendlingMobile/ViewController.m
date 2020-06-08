@@ -50,13 +50,12 @@
     [self.inMemoryController addRepresenter:hexRep];
     
     /* Grab its view and stick it into our container. */
-    UIView *containerView = self.view;
     UIView *hexView = [hexRep view];
-    hexView.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.5];
-    hexView.frame = CGRectInset(containerView.bounds, 20, 20);
+    hexView.backgroundColor = UIColor.whiteColor; // [[UIColor redColor] colorWithAlphaComponent:0.5];
+    hexView.frame = self.mainView.bounds;
     hexView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     hexView.translatesAutoresizingMaskIntoConstraints = YES;
-    [containerView addSubview:hexView];
+    [self.mainView addSubview:hexView];
 }
 
 @end
