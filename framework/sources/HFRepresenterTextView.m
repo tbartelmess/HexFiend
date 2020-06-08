@@ -856,7 +856,11 @@ enum LineCoverage_t {
 }
 
 - (BOOL)isFlipped {
+#if !TARGET_OS_IPHONE
     return YES;
+#else
+    return NO;
+#endif
 }
 
 - (HFTextRepresenter *)representer {
@@ -870,33 +874,20 @@ enum LineCoverage_t {
     [caretTimer invalidate];
 }
 
-#if TARGET_OS_IPHONE
-- (UIColor *)backgroundColorForEmptySpace {
-    return [UIColor clearColor];
-}
-#else
-- (NSColor *)backgroundColorForEmptySpace {
+- (HFColor *)backgroundColorForEmptySpace {
     NSArray *colors = [[self representer] rowBackgroundColors];
-    if (! [colors count]) return [NSColor clearColor]; 
+    if (! [colors count]) return [HFColor clearColor];
     else return colors[0];
 }
-#endif
 
-#if TARGET_OS_IPHONE
-- (UIColor *)backgroundColorForLine:(NSUInteger)line {
-    (void)line;
-    return [UIColor clearColor];
-}
-#else
-- (NSColor *)backgroundColorForLine:(NSUInteger)line {
+- (HFColor *)backgroundColorForLine:(NSUInteger)line {
     NSArray *colors = [[self representer] rowBackgroundColors];
     NSUInteger colorCount = [colors count];
-    if (colorCount == 0) return [NSColor clearColor];
+    if (colorCount == 0) return [HFColor clearColor];
     NSUInteger colorIndex = (line + startingLineBackgroundColorIndex) % colorCount;
     if (colorIndex == 0) return nil; //will be drawn by empty space
     else return colors[colorIndex]; 
 }
-#endif
 
 - (NSUInteger)bytesPerLine {
     HFASSERT([self representer] != nil);
@@ -911,9 +902,15 @@ enum LineCoverage_t {
 - (void)_drawDefaultLineBackgrounds:(CGRect)clip withLineHeight:(CGFloat)lineHeight maxLines:(NSUInteger)maxLines {
     CGRect bounds = [self bounds];
     NSUInteger lineIndex;
-    CGRect lineRect = CGRectMake(CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetWidth(bounds), lineHeight);
+    const BOOL isFlipped = self.isFlipped;
+    CGFloat lineRectY = isFlipped ? CGRectGetMinY(bounds) : CGRectGetMaxY(bounds);
+    CGRect lineRect = CGRectMake(CGRectGetMinX(bounds), lineRectY, CGRectGetWidth(bounds), lineHeight);
     if ([self showsFocusRing]) lineRect = CGRectInset(lineRect, 2, 0);
-    lineRect.origin.y -= [self verticalOffset] * [self lineHeight];
+    if (isFlipped) {
+        lineRect.origin.y -= [self verticalOffset] * [self lineHeight];
+    } else {
+        lineRect.origin.y += [self verticalOffset] * [self lineHeight];
+    }
     NSUInteger drawableLineIndex = 0;
     NEW_ARRAY(CGRect, lineRects, maxLines);
     NEW_OBJ_ARRAY(HFColor*, lineColors, maxLines);
@@ -927,12 +924,21 @@ enum LineCoverage_t {
                 drawableLineIndex++;
             }
         }
-        lineRect.origin.y += lineHeight;
+        if (isFlipped) {
+            lineRect.origin.y += lineHeight;
+        } else {
+            lineRect.origin.y -= lineHeight;
+        }
     }
     
     if (drawableLineIndex > 0) {
 #if !TARGET_OS_IPHONE
         NSRectFillListWithColorsUsingOperation(lineRects, lineColors, drawableLineIndex, NSCompositingOperationSourceOver);
+#else
+        for (NSUInteger i = 0; i < drawableLineIndex; i++) {
+            [lineColors[i] set];
+            [[UIBezierPath bezierPathWithRect:lineRects[i]] fill];
+        }
 #endif
     }
     
@@ -1507,8 +1513,9 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 - (void)drawTextWithClip:(CGRect)clip restrictingToTextInRanges:(NSArray *)restrictingToRanges context:(CGContextRef)ctx {
     CGRect bounds = [self bounds];
     CGFloat lineHeight = [self lineHeight];
-    
-    CGAffineTransform textTransform = CGContextGetTextMatrix(ctx);
+
+    //CGAffineTransform textTransform = CGContextGetTextMatrix(ctx);
+    CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
     CGContextSetTextDrawingMode(ctx, kCGTextFill);
     
     NSUInteger lineStartIndex, bytesPerLine = [self bytesPerLine];
@@ -1521,19 +1528,30 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
     
     CGRect lineRectInBoundsSpace = CGRectMake(CGRectGetMinX(bounds), CGRectGetMinY(bounds), CGRectGetWidth(bounds), lineHeight);
     lineRectInBoundsSpace.origin.y -= [self verticalOffset] * lineHeight;
+
+    const BOOL isFlipped = self.isFlipped;
     
     /* Start us off with the horizontal inset and move the baseline down by the ascender so our glyphs just graze the top of our view */
-    textTransform.tx += [self horizontalContainerInset];
+    CGPoint textPosition = CGPointMake(bounds.origin.x, isFlipped ? bounds.origin.y : CGRectGetMaxY(bounds));
+    textPosition.x += [self horizontalContainerInset];
     // Adjust by descender to center
     CGFloat yAdjust = lineHeight - ceil(fabs(fontObject.descender));
-    textTransform.ty += yAdjust - lineHeight * [self verticalOffset];
+    if (isFlipped) {
+        textPosition.y += yAdjust - lineHeight * [self verticalOffset];
+    } else {
+        textPosition.y -= yAdjust - lineHeight * [self verticalOffset];
+    }
     NSUInteger lineIndex = 0;
     const NSUInteger maxGlyphCount = [self maximumGlyphCountForByteCount:bytesPerLine];
     NEW_ARRAY(struct HFGlyph_t, glyphs, maxGlyphCount);
     NEW_ARRAY(CGSize, advances, maxGlyphCount);
     for (lineStartIndex = 0; lineStartIndex < byteCount; lineStartIndex += bytesPerLine) {
         if (lineStartIndex > 0) {
-            textTransform.ty += lineHeight;
+            if (isFlipped) {
+                textPosition.y += lineHeight;
+            } else {
+                textPosition.y -= lineHeight;
+            }
             lineRectInBoundsSpace.origin.y += lineHeight;
         }
         if (CGRectIntersectsRect(lineRectInBoundsSpace, clip)) {
@@ -1569,13 +1587,13 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
 #endif
                     
                     if (resultGlyphCount > 0) {
-                        textTransform.tx += initialTextOffset + advanceIntoLine;
-                        CGContextSetTextMatrix(ctx, textTransform);
+                        textPosition.x += initialTextOffset + advanceIntoLine;
+                        //CGContextSetTextMatrix(ctx, textTransform);
                         /* Draw them */
-                        [self drawGlyphs:glyphs atPoint:CGPointMake(textTransform.tx, textTransform.ty) withAdvances:advances withStyleRun:styleRun count:resultGlyphCount];
+                        [self drawGlyphs:glyphs atPoint:textPosition withAdvances:advances withStyleRun:styleRun count:resultGlyphCount];
                         
                         /* Undo the work we did before so as not to screw up the next run */
-                        textTransform.tx -= initialTextOffset + advanceIntoLine;
+                        textPosition.x -= initialTextOffset + advanceIntoLine;
                         
                         /* Record how far into our line this made us move */
                         NSUInteger glyphIndex;

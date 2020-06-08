@@ -32,13 +32,13 @@
     read(fd, [data mutableBytes], dataSize);
     close(fd);
 #else
-    NSMutableData *data = [[@"hello world" dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    NSMutableData *data = [[@"abcdefghijklmnopqrstuvwzyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!$neato" dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
 #endif
     
     /* Make a controller to hook everything up, and then configure it a bit. */
     self.inMemoryController = [[HFController alloc] init];
     [self.inMemoryController setBytesPerColumn:4];
-    
+
     /* Put that data in a byte slice.  Here we use initWithData:, which causes the byte slice to take ownership of the data (and may modify it).  If we want to prevent our data from being modified, we would use initWithUnsharedData: */
     HFSharedMemoryByteSlice *byteSlice = [[HFSharedMemoryByteSlice alloc] initWithData:data];
     HFByteArray *byteArray = [[HFBTreeByteArray alloc] init];
