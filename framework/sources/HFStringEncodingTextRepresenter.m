@@ -7,10 +7,13 @@
 
 #import <HexFiend/HFStringEncodingTextRepresenter.h>
 #import <HexFiend/HFRepresenterStringEncodingTextView.h>
+#if !TARGET_OS_IPHONE
 #import <HexFiend/HFPasteboardOwner.h>
+#endif
 #import <HexFiend/HFProgressTracker.h>
 #import <HexFiend/HFEncodingManager.h>
 
+#if !TARGET_OS_IPHONE
 @interface HFStringEncodingPasteboardOwner : HFPasteboardOwner
 @property HFStringEncoding* encoding;
 @end
@@ -48,6 +51,7 @@
 }
 
 @end
+#endif
 
 @implementation HFStringEncodingTextRepresenter
 {
@@ -96,6 +100,7 @@
     REQUIRE_NOT_NULL(text);
     NSData *data = [self.encoding dataFromString:text];
     if (! data) {
+#if !TARGET_OS_IPHONE
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *key = @"HFStringEncodingConversionFailureShowAlert";
             if (![[NSUserDefaults standardUserDefaults] objectForKey:key]) {
@@ -109,8 +114,11 @@
                 }
             }
         });
+#endif
         NSLog(@"%s: Can't convert \"%@\" to encoding %@", __PRETTY_FUNCTION__, text, self.encoding.name);
+#if !TARGET_OS_IPHONE
         NSBeep();
+#endif
     }
     else if ([data length]) { // a 0 length text can come about via e.g. option-e
         [[self controller] insertData:data replacingPreviousBytes:0 allowUndoCoalescing:YES];
@@ -122,10 +130,11 @@
     return [self.encoding dataFromString:string];
 }
 
-+ (NSPoint)defaultLayoutPosition {
-    return NSMakePoint(1, 0);
++ (CGPoint)defaultLayoutPosition {
+    return CGPointMake(1, 0);
 }
 
+#if !TARGET_OS_IPHONE
 - (void)copySelectedBytesToPasteboard:(NSPasteboard *)pb {
     return [self copySelectedBytesToPasteboard:pb encoding:[self encoding]];
 }
@@ -143,5 +152,6 @@
         [owner setBytesPerLine:[self bytesPerLine]];
     }
 }
+#endif
 
 @end

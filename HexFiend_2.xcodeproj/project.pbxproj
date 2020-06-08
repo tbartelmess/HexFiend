@@ -104,6 +104,7 @@
 		A591314021E3098800685B51 /* DataInspectorScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = A591313F21E3098800685B51 /* DataInspectorScrollView.m */; };
 		A594F047248DCD8E00DCACD3 /* HexFiend.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01E7BB80CDC530C00943F9E /* HexFiend.framework */; };
 		A594F048248DCD8E00DCACD3 /* HexFiend.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D01E7BB80CDC530C00943F9E /* HexFiend.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A594F04C248DD40A00DCACD3 /* HFStringEncodingTextRepresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CDB77C0CE737130084926B /* HFStringEncodingTextRepresenter.m */; };
 		A59BC5712001AB8C0066860F /* HFBinaryTemplateRepresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC5702001AB8C0066860F /* HFBinaryTemplateRepresenter.m */; };
 		A59BC5922001FB9A0066860F /* HFTclTemplateController.m in Sources */ = {isa = PBXBuildFile; fileRef = A59BC5912001FB9A0066860F /* HFTclTemplateController.m */; };
 		A59BC5942001FD0F0066860F /* Tcl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A59BC5932001FD0F0066860F /* Tcl.framework */; };
@@ -1928,6 +1929,7 @@
 				A51D0ECE20F2DCE200B55775 /* HFHexTextRepresenter.m in Sources */,
 				A5EF293220F187B700CA7B39 /* HFBTreeByteArray.m in Sources */,
 				A5EF293420F187B700CA7B39 /* HFByteArrayProxiedData.m in Sources */,
+				A594F04C248DD40A00DCACD3 /* HFStringEncodingTextRepresenter.m in Sources */,
 				A5EF293520F187B700CA7B39 /* HFAttributedByteArray.m in Sources */,
 				A51D0E9420F2BAB700B55775 /* HFRepresenterStringEncodingTextView.m in Sources */,
 				A5EF293820F187B700CA7B39 /* HFByteRangeAttribute.m in Sources */,

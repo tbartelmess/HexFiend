@@ -1698,6 +1698,10 @@ static size_t unionAndCleanLists(CGRect *rectList, __unsafe_unretained id *value
             [self drawFocusRingWithClip:clip];
         }
     }
+#else
+    // flip CoreText coordinates for iOS
+    CGContextTranslateCTM(ctx, 0, self.bounds.size.height);
+    CGContextScaleCTM(ctx, 1, -1);
 #endif
     
     NSUInteger bytesPerLine = [self bytesPerLine];
